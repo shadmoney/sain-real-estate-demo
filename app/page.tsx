@@ -8,6 +8,20 @@ const listings = [
   { price: "$1,175,000", address: "908 Meadowgate Drive", place: "McLean, VA 22101", beds: 5, baths: 4.5, sqft: "3,920", type: "Single Family", tone: "home-three" },
 ];
 
+const listingDetails = {
+  id: "VAFX2201846",
+  yearBuilt: "2018",
+  lot: "0.31 acres",
+  parking: "2-car attached garage",
+  hoa: "$148 / month",
+  taxes: "$10,842 / year",
+  cooling: "Central A/C",
+  heating: "Forced air · Natural gas",
+  schoolDistrict: "Fairfax County Public Schools",
+  listingOffice: "Blue Oak Realty Group",
+  listingContact: "703-555-0142 · listings@blueoak.example",
+};
+
 const stats = [
   ["17", "Active transactions", "5 closing this month"],
   ["08", "Active clients", "2 awaiting review"],
@@ -18,7 +32,13 @@ const stats = [
 export default function Home() {
   const [view, setView] = useState<"public" | "professional">("public");
   const [saved, setSaved] = useState<number[]>([1]);
+  const [selectedListing, setSelectedListing] = useState(0);
   const toggleSaved = (i: number) => setSaved((old) => old.includes(i) ? old.filter((x) => x !== i) : [...old, i]);
+  const showListing = (i: number) => {
+    setSelectedListing(i);
+    window.setTimeout(() => document.getElementById("listing-detail")?.scrollIntoView({ behavior: "smooth" }), 0);
+  };
+  const featured = listings[selectedListing];
 
   return (
     <main>
@@ -40,7 +60,50 @@ export default function Home() {
 
           <section className="properties" id="properties"><div className="section-head"><div><span className="eyebrow">PRODUCT 01 · PUBLIC IDX DEMO</span><h2>Consumer property search</h2></div><p>Representative public display using fictional listings. Production display will follow Bright MLS IDX rules, attribution, and refresh requirements.</p></div>
             <div className="filter-row"><button className="filter-wide">Northern Virginia <span>⌄</span></button><button>For sale <span>⌄</span></button><button>Any price <span>⌄</span></button><button>Beds & baths <span>⌄</span></button><button className="filter-icon">≡</button></div>
-            <div className="cards">{listings.map((x,i)=><article className="property-card" key={x.address}><div className={`property-image ${x.tone}`}><span className="demo-chip">SYNTHETIC DEMO</span><button className={`heart ${saved.includes(i) ? "saved" : ""}`} onClick={()=>toggleSaved(i)} aria-label="Save property">{saved.includes(i) ? "♥" : "♡"}</button><div className="roof"></div><div className="house"><i></i><i></i><i></i></div></div><div className="property-copy"><div className="status"><span></span>ACTIVE <em>{i === 0 ? "NEW" : i === 1 ? "4 DAYS" : "PRICE UPDATE"}</em></div><h3>{x.price}</h3><p>{x.address}<br/><small>{x.place}</small></p><div className="specs"><span><b>{x.beds}</b> beds</span><span><b>{x.baths}</b> baths</span><span><b>{x.sqft}</b> sq ft</span></div><footer>{x.type}<span>View details →</span></footer></div></article>)}</div>
+            <div className="cards">{listings.map((x,i)=><article className={`property-card ${selectedListing === i ? "selected-property" : ""}`} key={x.address}><div className={`property-image ${x.tone}`}><span className="demo-chip">SYNTHETIC DEMO</span><button className={`heart ${saved.includes(i) ? "saved" : ""}`} onClick={()=>toggleSaved(i)} aria-label="Save property">{saved.includes(i) ? "♥" : "♡"}</button><div className="roof"></div><div className="house"><i></i><i></i><i></i></div></div><div className="property-copy"><div className="status"><span></span>ACTIVE <em>{i === 0 ? "NEW" : i === 1 ? "4 DAYS" : "PRICE UPDATE"}</em></div><h3>{x.price}</h3><p>{x.address}<br/><small>{x.place}</small></p><div className="specs"><span><b>{x.beds}</b> beds</span><span><b>{x.baths}</b> baths</span><span><b>{x.sqft}</b> sq ft</span></div><p className="listing-firm">Listing broker: {listingDetails.listingOffice}</p><footer>{x.type}<button onClick={()=>showListing(i)}>View details →</button></footer></div></article>)}</div>
+          </section>
+
+          <section className="listing-detail" id="listing-detail" aria-labelledby="listing-title">
+            <div className="detail-review-bar"><span>BRIGHT IDX LISTING-DETAIL SAMPLE</span><p>Fictional property and brokerage data · Compliance layout for review only</p><b>SAIN REAL ESTATE BROKERAGE · DEMO OPERATOR</b></div>
+            <div className="detail-gallery" aria-label="Synthetic property photo gallery">
+              <div className={`detail-photo main-photo ${featured.tone}`}><span className="demo-chip">SYNTHETIC DEMO IMAGE</span><div className="roof"></div><div className="house"><i></i><i></i><i></i></div></div>
+              <div className="detail-photo interior-one"><span>Living room · synthetic illustration</span></div>
+              <div className="detail-photo interior-two"><span>Kitchen · synthetic illustration</span></div>
+              <button className="all-photos" type="button">View all 18 demo images</button>
+            </div>
+
+            <div className="detail-layout">
+              <article className="detail-main">
+                <div className="detail-heading">
+                  <div><span className="active-label"><i></i> Active</span><h1 id="listing-title">{featured.price}</h1><p>{featured.address}<br/><span>{featured.place}</span></p></div>
+                  <button className={`detail-save ${saved.includes(selectedListing) ? "saved" : ""}`} onClick={()=>toggleSaved(selectedListing)}>{saved.includes(selectedListing) ? "♥ Saved" : "♡ Save"}</button>
+                </div>
+                <div className="detail-specs"><span><b>{featured.beds}</b> bedrooms</span><span><b>{featured.baths}</b> bathrooms</span><span><b>{featured.sqft}</b> sq ft</span><span><b>{listingDetails.lot}</b> lot</span></div>
+
+                <div className="listing-attribution">
+                  <span>PROPERTY INFORMATION FROM BRIGHT MLS</span>
+                  <strong>Listing broker: {listingDetails.listingOffice}</strong>
+                  <p>Listing broker contact: {listingDetails.listingContact} · Listing ID {listingDetails.id}</p>
+                  <p>Advertising broker and site operator: SAIN Real Estate Brokerage <em>(fictional demo identity)</em></p>
+                  <small>Sample data timestamp: Aug 28, 2026 at 9:10 AM ET · Production IDX display refreshes at least every 12 hours.</small>
+                </div>
+
+                <section className="detail-section"><span className="eyebrow">PROPERTY DESCRIPTION</span><h2>Light-filled living, framed by mature trees.</h2><p>This fictional four-bedroom home pairs an open main level with quiet, flexible rooms for work and gathering. The kitchen opens to a covered terrace, while the lower level offers a recreation room and direct garden access.</p><p className="data-source">Description source: synthetic demonstration content created by SAIN Industries.</p></section>
+
+                <section className="detail-section"><span className="eyebrow">PROPERTY DETAILS</span><h2>At a glance</h2><dl className="facts-grid"><div><dt>Property type</dt><dd>{featured.type}</dd></div><div><dt>Year built</dt><dd>{listingDetails.yearBuilt}</dd></div><div><dt>Parking</dt><dd>{listingDetails.parking}</dd></div><div><dt>HOA fee</dt><dd>{listingDetails.hoa}</dd></div><div><dt>Annual taxes</dt><dd>{listingDetails.taxes}</dd></div><div><dt>Cooling</dt><dd>{listingDetails.cooling}</dd></div><div><dt>Heating</dt><dd>{listingDetails.heating}</dd></div><div><dt>School district</dt><dd>{listingDetails.schoolDistrict}</dd></div></dl></section>
+              </article>
+
+              <aside className="contact-card">
+                <span className="eyebrow">ASK ABOUT THIS HOME</span><h2>Connect with the site broker</h2><p>Your message will go to a SAIN Real Estate Brokerage representative, not the listing agent or listing office.</p>
+                <label>Full name<input type="text" placeholder="Your name" /></label><label>Email address<input type="email" placeholder="you@example.com" /></label><label>Message<textarea defaultValue={`I’m interested in ${featured.address}.`} /></label>
+                <button type="button">Contact SAIN representative</button><small>Demo form only — no message will be sent.</small>
+              </aside>
+            </div>
+
+            <div className="idx-disclosures">
+              <div><span className="eyebrow">IDX DISCLOSURES</span><h2>About this property information</h2></div>
+              <div className="disclosure-copy"><p>Internet Data Exchange (IDX) provides consumers with access to property listings supplied by participating real estate brokers. Bright MLS is the source of the property information displayed on this page.</p><p>Property information is provided exclusively for consumers’ personal, non-commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Some properties that appear for sale may no longer be available because they are under contract, have sold, or are no longer being offered for sale.</p><p>The property information displayed is deemed reliable but is not guaranteed. © 2026 Bright, All Rights Reserved.</p></div>
+            </div>
           </section>
 
           <section className="workflow" id="workflow"><div><span className="eyebrow">PRODUCT 02 · PRIVATE BACK OFFICE</span><h2>Market intelligence and transaction operations.</h2><p>A separately licensed, authenticated workspace for authorized professionals. Private fields are never exposed through the public IDX product.</p><button className="primary" onClick={()=>setView("professional")}>Enter back office demo <span>→</span></button></div><div className="feature-grid"><article><b>01</b><h3>Market analytics</h3><p>Inventory, pricing, status-change, and comparable-property analysis.</p></article><article><b>02</b><h3>Transaction pipeline</h3><p>Milestones, deadlines, documents, parties, and closing coordination.</p></article><article><b>03</b><h3>Client management</h3><p>Verified relationships, saved searches, feedback, and follow-up activity.</p></article><article><b>04</b><h3>Access governance</h3><p>Subscriber verification, role controls, audit history, and access revocation.</p></article></div></section>
